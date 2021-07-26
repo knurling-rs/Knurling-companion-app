@@ -1,48 +1,23 @@
 <template>
   <img alt="Rust logo" src="./assets/groundhog_bike.png" size=200/>
- <DoughnutChart ref="doughnutRef" :chartData="testData" :options="options" />  <Chart />
+ <HelloWorld msg="A biking Sensor app" />
+ <MyChart />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent } from 'vue'
 import HelloWorld from './components/HelloWorld.vue'
-import { DoughnutChart } from "vue-chart-3";
-import { Chart, ChartData, ChartOptions, registerables } from "chart.js";
-Chart.register(...registerables);
+import MyChart from './components/MyChart.vue'
+
 export default defineComponent({
   name: 'App',
   components: {
     HelloWorld,
-    DoughnutChart
-  },
-  setup() {
-    const dataValues = ref([30, 40, 60, 70, 5]);
-    const doughnutRef = ref();
-    const testData = computed<ChartData<"doughnut">>(() => ({
-      labels: ["Paris", "Nîmes", "Toulon", "Perpignan", "Autre"],
-      datasets: [
-        {
-          data: dataValues.value,
-          backgroundColor: [
-            "#77CEFF",
-            "#0079AF",
-            "#123E6B",
-            "#97B0C4",
-            "#A5C8ED",
-          ],
-        },
-      ],
-    }));
-    const options =  {};
-    return {
-      testData,
-      options,
-      doughnutRef,
-    };
-  },
-
+    MyChart,
+  }
 })
 </script>
+
 
 <style>
 #app {

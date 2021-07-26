@@ -5,15 +5,16 @@
 </template>
 
 <script lang='ts'>
-import { computed, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { DoughnutChart } from "vue-chart-3";
 import { Chart, ChartData, registerables } from "chart.js";
 
 Chart.register(...registerables);
-
-export default {
-  name: "Chart",
-  components: { DoughnutChart },
+export default defineComponent({
+  name: 'MyChart',
+  components: {
+    DoughnutChart
+  },
   setup() {
     const dataValues = ref([30, 40, 60, 70, 5]);
     const doughnutRef = ref();
@@ -26,20 +27,21 @@ export default {
             "#77CEFF",
             "#0079AF",
             "#123E6B",
-            "#97B84af",
+            "#97B0C4",
             "#A5C8ED",
           ],
         },
       ],
     }));
-    const options = {};
+    const options =  {};
     return {
       testData,
       options,
       doughnutRef,
     };
   },
-};
+
+})
 </script>
 
 <style>

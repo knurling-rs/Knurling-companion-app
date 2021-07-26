@@ -1,6 +1,5 @@
 <template>
   <h1>{{ "Important information from your 🐿️" }}</h1>
-
   <!--  <button type="button" @click="count++">count is: {{ count }}</button> -->
   <p>
     Can I have a measurement ? 
