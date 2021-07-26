@@ -1,20 +1,19 @@
 <template>
-  <img alt="Rust logo" src="./assets/groundhog_bike.png" size=200/>
- <DoughnutChart ref="doughnutRef" :chartData="testData" :options="options" />  <Chart />
+  <div style="width: 400px">
+    <DoughnutChart ref="doughnutRef" :chartData="testData" :options="options" />
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, computed, ref } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+<script lang='ts'>
+import { computed, ref } from "vue";
 import { DoughnutChart } from "vue-chart-3";
-import { Chart, ChartData, ChartOptions, registerables } from "chart.js";
+import { Chart, ChartData, registerables } from "chart.js";
+
 Chart.register(...registerables);
-export default defineComponent({
-  name: 'App',
-  components: {
-    HelloWorld,
-    DoughnutChart
-  },
+
+export default {
+  name: "Chart",
+  components: { DoughnutChart },
   setup() {
     const dataValues = ref([30, 40, 60, 70, 5]);
     const doughnutRef = ref();
@@ -27,21 +26,20 @@ export default defineComponent({
             "#77CEFF",
             "#0079AF",
             "#123E6B",
-            "#97B0C4",
+            "#97B84af",
             "#A5C8ED",
           ],
         },
       ],
     }));
-    const options =  {};
+    const options = {};
     return {
       testData,
       options,
       doughnutRef,
     };
   },
-
-})
+};
 </script>
 
 <style>
@@ -50,7 +48,7 @@ export default defineComponent({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #2c5850;
   margin-top: 60px;
 }
 </style>
