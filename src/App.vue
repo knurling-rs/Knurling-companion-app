@@ -3,15 +3,14 @@
   <p>
  {{dataValues}}
  </p>
- <MyChart />
+<MyChart :chartData="dataValues"/>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
 import MyChart from './components/MyChart.vue'
 import { invoke } from '@tauri-apps/api/tauri'
-import { emit, listen } from '@tauri-apps/api/event'
+import { listen } from '@tauri-apps/api/event'
 
 export default defineComponent({
   name: 'App',
@@ -28,7 +27,7 @@ export default defineComponent({
     await invoke('init_process');
     listen("distance_emitter", x => {
         this.dataValues.push(Number((x as any).payload as string));
-        if(this.dataValues.length > 10) {
+        if(this.dataValues.length > 5) {
           this.dataValues.shift();
         } 
     });
