@@ -57,9 +57,13 @@ fn init_process(window: Window) {
         } => {
           let data: Option<[u8; 4]> = data.try_into().ok();
           if let Some(d) = data {
-            window
-              .emit("distance_emitter", u32::from_be_bytes(d).to_string())
-              .unwrap()
+            let mut dist = 0u32;
+            if u32::from_be_bytes(d) > 600 {
+              dist = 500u32;
+            } else {
+              dist = u32::from_be_bytes(d);
+            }
+            window.emit("distance_emitter", dist.to_string()).unwrap()
             //.ok();
           }
         }
