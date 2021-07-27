@@ -1,9 +1,11 @@
 <template>
   <img alt="Rust logo" src="./assets/groundhog_bike.png" size=200/>
-  <p>
- {{dataValues}}
- </p>
-<MyChart :chartSensorData="dataValues"/>
+  <h2> ⚠️ Important security information ⚠️ </h2>
+  <h3> ... brought to you by a rodent 🐿️</h3>
+  <div class="chart-container" style="margin:0 auto; width:70vw">
+    <MyChart :chartSensorData="dataValues"/>
+  </div>
+
 </template>
 
 <script lang="ts">
@@ -20,14 +22,14 @@ export default defineComponent({
   data(){
       return {
           msg: "",
-          dataValues: new Array(20).fill(null),
+          dataValues: new Array(40).fill(10),
       };
   },
   async mounted(){
     await invoke('init_process');
     listen("distance_emitter", x => {
         this.dataValues.push(Number((x as any).payload as string));
-        if(this.dataValues.length > 20) {
+        if(this.dataValues.length > 40) {
           this.dataValues.shift();
         } 
     });
@@ -35,14 +37,23 @@ export default defineComponent({
 });
 </script>
 
-
 <style scoped>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+img{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   margin-top: 60px;
+
 }
+h2, h3 {
+  text-align: center;
+  color: rgb(150, 46, 5);
+  margin-top: 1em;
+}
+
+label {
+  margin: 0 0.5em;
+  font-weight: bold;
+}
+
 </style>
