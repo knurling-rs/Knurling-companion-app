@@ -3,7 +3,7 @@
   <p>
  {{dataValues}}
  </p>
-<MyChart :chartData="dataValues"/>
+<MyChart :chartSensorData="dataValues"/>
 </template>
 
 <script lang="ts">
@@ -20,14 +20,14 @@ export default defineComponent({
   data(){
       return {
           msg: "",
-          dataValues: [0,0,0,0,0],
+          dataValues: new Array(20).fill(null),
       };
   },
   async mounted(){
     await invoke('init_process');
     listen("distance_emitter", x => {
         this.dataValues.push(Number((x as any).payload as string));
-        if(this.dataValues.length > 5) {
+        if(this.dataValues.length > 20) {
           this.dataValues.shift();
         } 
     });
