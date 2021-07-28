@@ -68,40 +68,43 @@ fn init_process(window: Window) {
   // ...we should be able to access our value inside that new thread"
   std::thread::spawn(move || {
     let mut rng = rand::thread_rng();
-    while let Ok(event) = event_receiver.recv() {
-      while DEMO.load(Ordering::SeqCst) {
+
+    loop {
+      if DEMO.load(Ordering::SeqCst) {
         window.emit("distance_emitter", rng.gen_range(20..500)).ok();
         thread::sleep(Duration::from_millis(100));
       }
-
-      match event {
-        // This is the generic name of "advertisement" that beacons are sending.
-        CentralEvent::ManufacturerDataAdvertisement {
-          address: _,
-          manufacturer_id: manufacturer_id,
-          data,
-        } => {
-          // 0xFFFF	This value has special meaning depending on the context in which it used. Link Manager Protocol (LMP): This value may be used in the internal and interoperability tests before a Company ID has been assigned. This value shall not be used in shipping end products. Device ID Profile:
-          ///This value is reserved as the default vendor ID when no Device ID service record is present in a remote device.
-          //https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/
-          if manufacturer_id == 0xffff {
-            // Btleplug is receiving a vector, it has no idea about the size of the data we are receiving
-            // We need to cast it into a [u8] array of size 4
-            let data: Option<[u8; 4]> = data.try_into().ok();
-            if let Some(d) = data {
-              let mut dist: u32 = u32::from_be_bytes(d);
-              if dist > 600 {
-                dist = 525;
-              } else {
-                dist = u32::from_be_bytes(d);
+      if let Ok(event) = event_receiver.recv() {
+        match event {
+          // This is the generic name of "advertisement" that beacons are sending.
+          CentralEvent::ManufacturerDataAdvertisement {
+            address: _,
+            manufacturer_id: manufacturer_id,
+            data,
+          } => {
+            // 0xFFFF	has special meaning
+            // it is reserved as default vendor ID when no Device ID service record is present
+            // in a remote device.
+            //https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/
+            if manufacturer_id == 0xffff {
+              // Btleplug is receiving a vector, it has no idea about the size of the data we are receiving
+              // We need to cast it into a [u8] array of size 4
+              let data: Option<[u8; 4]> = data.try_into().ok();
+              if let Some(d) = data {
+                let mut dist: u32 = u32::from_be_bytes(d);
+                if dist > 600 {
+                  dist = 525;
+                } else {
+                  dist = u32::from_be_bytes(d);
+                }
+                //Ok() discards the error if any, since this is only a test app we don't need
+                // to do proper error handling.
+                window.emit("distance_emitter", dist).ok();
               }
-              //Ok() discards the error if any, since this is only a test app we don't need
-              // to do proper error handling.
-              window.emit("distance_emitter", dist).ok();
             }
           }
+          _ => {}
         }
-        _ => {}
       }
     }
   });
