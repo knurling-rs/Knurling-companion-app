@@ -12,21 +12,33 @@ use btleplug::corebluetooth::{adapter::Adapter, manager::Manager};
 #[cfg(target_os = "windows")]
 use btleplug::winrtble::{adapter::Adapter, manager::Manager};
 use rand::Rng;
-
 use std::convert::TryInto;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::{thread, time::Duration};
+
 use tauri::Manager as tauriManager;
 use tauri::Window;
+
+static DEMO: AtomicBool = AtomicBool::new(false);
+
 // the payload type must implement `Serialize`.
 #[derive(serde::Serialize)]
 struct Payload {
   message: String,
 }
 
+#[tauri::command]
+fn toggle_demo() -> bool {
+  !DEMO
+    // Ordering::SeqCst is some low level stuff to make sure it is written consequently in memory
+    .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |x| Some(!x))
+    .unwrap()
+}
 // Also in main.rs
 fn main() {
   tauri::Builder::default()
     // This is where you pass in your commands
-    .invoke_handler(tauri::generate_handler![init_process])
+    .invoke_handler(tauri::generate_handler![init_process, toggle_demo])
     .run(tauri::generate_context!())
     .expect("failed to run app");
 }
@@ -37,6 +49,7 @@ fn get_central(manager: &Manager) -> Adapter {
   let adapters = manager.adapters().unwrap();
   adapters.into_iter().nth(0).unwrap()
 }
+
 // init a background process on the command, and emit periodic events only to the window that used the command
 #[tauri::command]
 fn init_process(window: Window) {
@@ -54,31 +67,39 @@ fn init_process(window: Window) {
   // "Because thread::spawn runs this closure in a new thread,
   // ...we should be able to access our value inside that new thread"
   std::thread::spawn(move || {
+    let mut rng = rand::thread_rng();
     while let Ok(event) = event_receiver.recv() {
+      while DEMO.load(Ordering::SeqCst) {
+        window.emit("distance_emitter", rng.gen_range(20..500)).ok();
+        thread::sleep(Duration::from_millis(100));
+      }
+
       match event {
         // This is the generic name of "advertisement" that beacons are sending.
         CentralEvent::ManufacturerDataAdvertisement {
           address: _,
-          manufacturer_id: _,
+          manufacturer_id: manufacturer_id,
           data,
         } => {
-          let mut dist: u32 = 0;
-          // Btleplug is receiving a vector, it has no idea about the size of the data we are receiving
-          // We need to cast it into a [u8] array of size 4
-          let data: Option<[u8; 4]> = data.try_into().ok();
-          if let Some(d) = data {
-            match dist {
-              // If the distance is superior to 6 meters, let's say we are safe
-              mut dist if u32::from_be_bytes(d) > 600 => dist = 600,
-              _ => dist = u32::from_be_bytes(d),
+          // 0xFFFF	This value has special meaning depending on the context in which it used. Link Manager Protocol (LMP): This value may be used in the internal and interoperability tests before a Company ID has been assigned. This value shall not be used in shipping end products. Device ID Profile:
+          ///This value is reserved as the default vendor ID when no Device ID service record is present in a remote device.
+          //https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/
+          if manufacturer_id == 0xffff {
+            // Btleplug is receiving a vector, it has no idea about the size of the data we are receiving
+            // We need to cast it into a [u8] array of size 4
+            let data: Option<[u8; 4]> = data.try_into().ok();
+            if let Some(d) = data {
+              let mut dist: u32 = u32::from_be_bytes(d);
+              if dist > 600 {
+                dist = 525;
+              } else {
+                dist = u32::from_be_bytes(d);
+              }
+              //Ok() discards the error if any, since this is only a test app we don't need
+              // to do proper error handling.
+              window.emit("distance_emitter", dist).ok();
             }
-            //Ok() discards the error if any, since this is only a test app we don't need
-            // to do proper error handling.
-          } else {
-            let mut rng = rand::thread_rng();
-            dist = rng.gen_range(20..600);
           }
-          window.emit("distance_emitter", dist).ok();
         }
         _ => {}
       }
