@@ -73,8 +73,7 @@ fn init_process(window: Window) {
       if DEMO.load(Ordering::SeqCst) {
         window.emit("distance_emitter", rng.gen_range(20..500)).ok();
         thread::sleep(Duration::from_millis(100));
-      }
-      if let Ok(event) = event_receiver.recv() {
+      } else if let Ok(event) = event_receiver.recv() {
         match event {
           // This is the generic name of "advertisement" that beacons are sending.
           CentralEvent::ManufacturerDataAdvertisement {
