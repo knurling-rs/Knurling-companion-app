@@ -2,7 +2,7 @@
 
 This is a companion app built with Vite + Vue + Tauri, to track the data send by HC-SR04 sensor.
 
-Tauri 🐂, the back-end part, is built in VITE. You can find all the files in `src-tauri`.
+Tauri 🐂, the back-end part, is built inside [Vite](https://vitejs.dev/). You can find all the files in `src-tauri`.
 
 `src` contain the front-end files.
 
@@ -16,7 +16,7 @@ It has two modes, a DEMO mode if you don't have a sensor, that spawn random poin
 [Btleplug](https://docs.rs/btleplug/0.8.0/btleplug/) is inserted into a `#[tauri::command]` to receive data. 
 ## Dependencies
 
-Sytem dependencies for Tauri are described [here](https://tauri.studio/en/docs/getting-started/intro)
+Sytem dependencies for Tauri are described [here](https://tauri.studio/en/docs/getting-started/intro).
 
 ## Small tweaks
 
