@@ -10,7 +10,7 @@ It has two modes, a DEMO mode if you don't have a sensor, that spawn random poin
 
 
 <p align="center">
-    <img src=./demo_live.gif width="600"/>
+    <img src=./demo_live.gif width="400"/>
 </p>
 
 [Btleplug](https://docs.rs/btleplug/0.8.0/btleplug/) is inserted into a `#[tauri::command]` to receive data. 
@@ -30,7 +30,7 @@ const chartData = computed<ChartData<'line'>>(() => ({
     tension: 0.1,
 ```
 <p align="center">
-    <img src=./bezier_demo.gif width="600"/>
+    <img src=./bezier_demo.gif width="400"/>
 </p>
 
 ## To run the project:
