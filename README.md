@@ -1,9 +1,17 @@
 # Knurling companion app
 
 This is a companion app built with Vite + Vue + Tauri, to track the data send by HC-SR04 sensor.
+
+Tauri 🐂, the back-end part, is built in VITE. You can find all the files in `src-tauri`.
+
+`src` contain the front-end files.
+
 It has two modes, a DEMO mode if you don't have a sensor, that spawn random points between 20 and 500, and a LIVE mode when working with your sensor.
 
-![Companion app](demo_live.gif)
+
+<p align="center">
+    <img src=./demo_live.gif width="600"/>
+</p>
 
 [Btleplug](https://docs.rs/btleplug/0.8.0/btleplug/) is inserted into a `#[tauri::command]` to receive data. 
 ## Dependencies
@@ -21,8 +29,9 @@ In particular, if you love the look of a Bezier function, change the `tension` v
 const chartData = computed<ChartData<'line'>>(() => ({
     tension: 0.1,
 ```
-
-![Bezier curve demo](bezier_demo.gif)
+<p align="center">
+    <img src=./bezier_demo.gif width="600"/>
+</p>
 
 ## To run the project:
 
