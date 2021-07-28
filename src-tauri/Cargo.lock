@@ -43,6 +43,7 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "btleplug",
+ "rand 0.8.4",
  "serde",
  "serde_json",
  "tauri",

@@ -28,7 +28,7 @@ export default defineComponent({
   async mounted(){
     await invoke('init_process');
     listen("distance_emitter", x => {
-        this.dataValues.push(Number((x as any).payload as string));
+        this.dataValues.push((x as any).payload as string);
         if(this.dataValues.length > 40) {
           this.dataValues.shift();
         } 

@@ -2,6 +2,8 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+
+// Those imports are necessary for different targets
 use btleplug::api::{Central, CentralEvent};
 #[cfg(target_os = "linux")]
 use btleplug::bluez::{adapter::Adapter, manager::Manager};
@@ -9,6 +11,7 @@ use btleplug::bluez::{adapter::Adapter, manager::Manager};
 use btleplug::corebluetooth::{adapter::Adapter, manager::Manager};
 #[cfg(target_os = "windows")]
 use btleplug::winrtble::{adapter::Adapter, manager::Manager};
+use rand::Rng;
 
 use std::convert::TryInto;
 use tauri::Manager as tauriManager;
@@ -28,8 +31,7 @@ fn main() {
     .expect("failed to run app");
 }
 
-// adapter retrieval works differently depending on your platform right now.
-// API needs to be aligned.
+// Introducing Btleplug into Tauri
 
 fn get_central(manager: &Manager) -> Adapter {
   let adapters = manager.adapters().unwrap();
@@ -47,25 +49,36 @@ fn init_process(window: Window) {
   // start scanning for devices
   central.start_scan().unwrap();
 
+  // The Rust thread API expects a fully owned closure by API.
+  // So the move forces the closure to take ownership rather than borrowing, to fulfill the API.
+  // "Because thread::spawn runs this closure in a new thread,
+  // ...we should be able to access our value inside that new thread"
   std::thread::spawn(move || {
     while let Ok(event) = event_receiver.recv() {
       match event {
+        // This is the generic name of "advertisement" that beacons are sending.
         CentralEvent::ManufacturerDataAdvertisement {
           address: _,
           manufacturer_id: _,
           data,
         } => {
+          let mut dist: u32 = 0;
+          // Btleplug is receiving a vector, it has no idea about the size of the data we are receiving
+          // We need to cast it into a [u8] array of size 4
           let data: Option<[u8; 4]> = data.try_into().ok();
           if let Some(d) = data {
-            let mut dist = 0u32;
-            if u32::from_be_bytes(d) > 600 {
-              dist = 500u32;
-            } else {
-              dist = u32::from_be_bytes(d);
+            match dist {
+              // If the distance is superior to 6 meters, let's say we are safe
+              mut dist if u32::from_be_bytes(d) > 600 => dist = 600,
+              _ => dist = u32::from_be_bytes(d),
             }
-            window.emit("distance_emitter", dist.to_string()).unwrap()
-            //.ok();
+            //Ok() discards the error if any, since this is only a test app we don't need
+            // to do proper error handling.
+          } else {
+            let mut rng = rand::thread_rng();
+            dist = rng.gen_range(20..600);
           }
+          window.emit("distance_emitter", dist).ok();
         }
         _ => {}
       }

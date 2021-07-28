@@ -2,6 +2,8 @@
 
 This is a companion app built with Vite + Tauri, to track the data send by HC-SR04 sensor.
 
+Btleplug is introduced into Tauri command
+#[tauri::command]
 ## Dependencies
 
 Sytem dependencies and node js described [here](https://tauri.studio/en/docs/getting-started/intro)
