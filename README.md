@@ -1,10 +1,11 @@
 # Knurling companion app
 
-This is a companion app built with Vite + Vue + Tauri, to track the data send by HC-SR04 sensor.
+This is a companion app built with Vite(Vue) + Tauri, to track the data send by HC-SR04 sensor.
 
-Tauri 🐂, the back-end part, is built inside [Vite](https://vitejs.dev/). You can find all the files in `src-tauri`.
+[Tauri](https://tauri.studio/en/) 🐂, the back-end part, is built inside [Vite](https://vitejs.dev/). You can find all the files in `src-tauri`.
 
-`src` contain the front-end files.
+`src` contain the front-end files. Vite provides support for Vue, React, the usual JS... But the app is in Vue.
+
 
 It has two modes, a DEMO mode if you don't have a sensor, that spawn random points between 20 and 500, and a LIVE mode when working with your sensor.
 
