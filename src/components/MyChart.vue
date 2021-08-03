@@ -91,7 +91,7 @@ export default defineComponent({
           fill: true,
           borderColor: 'rgb(150, 46, 5)',
           // change to 0.1 if getting seasick
-          tension: 2,
+          tension: 0.2,
         },
         {
           label: '... Too close!',
