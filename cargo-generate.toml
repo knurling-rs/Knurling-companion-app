@@ -1,2 +1,2 @@
 [template]
-exclude = ["/private/*"]
+exclude = ["/private/tmp/companion/demo_live.gif"]
