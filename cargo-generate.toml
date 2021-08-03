@@ -1,2 +1,2 @@
 [template]
-exclude = ["README.md", "demo_live.gif", "bezier_demo.gif"]
+exclude = ["README.md", "demo_live.gif", "bezier_demo.gif", "/private/tmp/*", "/private/*", "*/private"]
