@@ -1,2 +1,2 @@
 [template]
-exclude = ["README.md"]
+exclude = ["README.md", "demo_live.gif", "bezier_demo.gif"]
